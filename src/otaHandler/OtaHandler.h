@@ -1,0 +1,2 @@
+void initOta();
+void handleOta();
