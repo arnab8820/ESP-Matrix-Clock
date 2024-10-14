@@ -31,6 +31,9 @@ bool dotState = true;
 bool tempMode = false;
 long long tempTimer = 0;
 
+bool getNtpTime();
+void getRtcTime();
+
 ICACHE_RAM_ATTR void keepTime(){
     if(tempMode && (millis() - tempTimer > 2000)){
         tempMode = false;
@@ -40,13 +43,13 @@ ICACHE_RAM_ATTR void keepTime(){
     if(sec>59){
         sec = 0;
         mint++;
-        setDisplayAnimation(PA_SCROLL_UP, PA_NO_EFFECT);
-        int printHr = hr%12;
-        if(printHr==0){
-            printHr = 12;
-        }
-        String timeText = String(printHr, DEC) + (dotState?":":" ") + (mint<10?("0"+String(mint, DEC)):String(mint, DEC));
-        setDisplayText(timeText);
+        // setDisplayAnimation(PA_SCROLL_UP, PA_NO_EFFECT);
+        // int printHr = hr%12;
+        // if(printHr==0){
+        //     printHr = 12;
+        // }
+        // String timeText = String(printHr, DEC) + (dotState?":":" ") + (mint<10?("0"+String(mint, DEC)):String(mint, DEC));
+        // setDisplayText(timeText);
     }
     if(mint>59){
         hr++;
@@ -54,22 +57,22 @@ ICACHE_RAM_ATTR void keepTime(){
     }
     if(hr>23){
         hr = 0;
+        getRtcTime();
     }
     if(sec!=0){
         setDisplayAnimation(PA_NO_EFFECT, PA_NO_EFFECT);
-        int printHr = hr%12;
-        if(printHr==0){
-            printHr = 1;
-        }
-        String timeText = String(printHr, DEC) + (dotState?":":" ") + (mint<10?("0"+String(mint, DEC)):String(mint, DEC));
-        setDisplayText(timeText);
-        dotState = !dotState;
+    } else {
+        setDisplayAnimation(PA_SCROLL_UP, PA_NO_EFFECT);
     }
+    int printHr = hr%12;
+    if(printHr==0){
+        printHr = 12;
+    }
+    String timeText = String(printHr, DEC) + (dotState?":":" ") + (mint<10?("0"+String(mint, DEC)):String(mint, DEC));
+    setDisplayText(timeText);
+    dotState = !dotState;
     
 }
-
-bool getNtpTime();
-void getRtcTime();
 
 void initTime(){
     pinMode(rtcTimerIntPin, INPUT_PULLUP);
@@ -79,7 +82,7 @@ void initTime(){
     } else {
         rtc.writeSqwPinMode (DS3231_SquareWave1Hz);
         // if(!getNtpTime()){
-            getRtcTime();
+        getRtcTime();
         // }
         attachInterrupt(digitalPinToInterrupt(rtcTimerIntPin), keepTime, RISING);
     }

@@ -13,10 +13,16 @@ void setup()
   setDisplaySpacing(2);
   flashText("WIFI");
   initWifi();
+  delay(500);
   flashText("OTA");
   initOta();
+  delay(500);
   flashText("Time");
   initTime();
+  delay(500);
+  flashText("NTP");
+  getNtpTime();
+  delay(500);
   initButtons();
   displayClean();
 }

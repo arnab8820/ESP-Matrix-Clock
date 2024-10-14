@@ -20,6 +20,8 @@ void incrementSetup(){
     setupState++;
     displaySetupState();
     if(setupState>4){
+        setDisplayText("Saved");
+        setTime();
         setupMode = false;
         setupState = 0;
     }
@@ -63,6 +65,7 @@ void displaySetupState(){
 void incrementSetupVal(){
     if(!setupMode){
         setDisplayAnimation(PA_SCROLL_UP, PA_NO_EFFECT);
+        displayClean();
         showTemp();
         return;
     }
