@@ -123,3 +123,8 @@ void incrementSetupVal(){
     }
     displaySetupState();
 }
+
+void setupTimeOut(){
+    setupMode = false;
+    setupState = 0;
+}

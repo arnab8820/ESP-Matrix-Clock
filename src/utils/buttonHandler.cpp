@@ -1,6 +1,8 @@
 #include <Arduino.h>
 #include "setup/setup.h"
 
+#define SETUP_TIMEOUT 60000
+
 // interrupt pin config
 const byte btn1IntPin = 0;
 const byte btn2IntPin = 2;
@@ -35,5 +37,9 @@ void initButtons(){
 void btnTick(){
     if((millis() - btnTimer >= debounceTime)&&!btnEnabled){
         btnEnabled = true;
+    }
+
+    if(setupMode && (millis() - btnTimer >= SETUP_TIMEOUT)){
+        setupTimeOut();
     }
 }
