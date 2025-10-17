@@ -1,10 +1,4 @@
-#include "RTClib.h"
-#include <NTPClient.h>
-#include <WiFiUdp.h>
-#include <MD_Parola.h>
-#include "displayHandler/displayHandler.h"
-#include "wifiHandler/wifiHandler.h"
-#include "setup/setup.h"
+#include "timeHandler.h"
 
 extern bool setupMode;
 
@@ -17,6 +11,7 @@ RTC_DS3231 rtc;
 // Define NTP Client to get time
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, "asia.pool.ntp.org", utcOffsetInSeconds);
+ESPWifiAssist* wifiClient = nullptr;
 
 int hr = 0;
 int mint = 0;
@@ -43,13 +38,6 @@ ICACHE_RAM_ATTR void keepTime(){
     if(sec>59){
         sec = 0;
         mint++;
-        // setDisplayAnimation(PA_SCROLL_UP, PA_NO_EFFECT);
-        // int printHr = hr%12;
-        // if(printHr==0){
-        //     printHr = 12;
-        // }
-        // String timeText = String(printHr, DEC) + (dotState?":":" ") + (mint<10?("0"+String(mint, DEC)):String(mint, DEC));
-        // setDisplayText(timeText);
     }
     if(mint>59){
         hr++;
@@ -74,7 +62,8 @@ ICACHE_RAM_ATTR void keepTime(){
     
 }
 
-void initTime(){
+void initTime(ESPWifiAssist &_wifi){
+    wifiClient = &_wifi;
     pinMode(rtcTimerIntPin, INPUT_PULLUP);
     // digitalWrite(rtcTimerIntPin, HIGH);
     if (! rtc.begin()) {
@@ -93,7 +82,7 @@ void setTime(){
 }
 
 bool getNtpTime(){
-    if(!isWifiConnected()) return false;
+    if(!wifiClient->isConnected()) return false;
     int retryCount = 0;
     while(!timeClient.update() && retryCount <= 60){
         retryCount++;
